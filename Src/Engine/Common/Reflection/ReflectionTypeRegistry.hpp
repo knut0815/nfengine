@@ -12,6 +12,7 @@
 
 #include "../Containers/HashMap.hpp"
 #include "../Containers/StringView.hpp"
+#include "../System/RWLock.hpp"
 
 
 namespace NFE {
@@ -65,6 +66,14 @@ public:
 
 private:
     TypeRegistry() = default;
+
+    TypeDeserializationResult DeserializeClassOrEnumType(const Type*& outType, Common::InputStream& stream, SerializationContext& context);
+    TypeDeserializationResult DeserializeDynArrayType(const Type*& outType, Common::InputStream& stream, SerializationContext& context);
+    TypeDeserializationResult DeserializeNativeArrayType(const Type*& outType, Common::InputStream& stream, SerializationContext& context);
+    TypeDeserializationResult DeserializeUniquePtrType(const Type*& outType, Common::InputStream& stream, SerializationContext& context);
+    TypeDeserializationResult DeserializeSharedPtrType(const Type*& outType, Common::InputStream& stream, SerializationContext& context);
+
+    Common::RWLock mTypesListLock;
 
     Common::HashMap<Common::StringView, const Type*> mTypesByName;
     Common::HashMap<size_t, Type*> mTypesByHash;

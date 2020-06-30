@@ -19,6 +19,12 @@ NativeArrayType::NativeArrayType(uint32 arraySize, const Type* elementType)
     NFE_ASSERT(mArraySize > 0, "Native array size cannot be empty. Type: %s", GetName().Str());
 }
 
+const Common::String NativeArrayType::BuildTypeName(const Type* underlyingType, uint32 arraySize)
+{
+    NFE_ASSERT(underlyingType, "Invalid type");
+    return Common::String::Printf("%s[%u]", underlyingType->GetName().Str(), arraySize);
+}
+
 void NativeArrayType::OnInitialize(const TypeInfo& info)
 {
     ArrayType::OnInitialize(info);
@@ -289,6 +295,26 @@ bool NativeArrayType::DeserializeBinary(void* outObject, Common::InputStream& st
     return true;
 }
 
+bool NativeArrayType::SerializeTypeName(Common::OutputStream* stream, SerializationContext& context) const
+{
+    // write header
+    if (!Type::SerializeTypeName(stream, context))
+    {
+        return false;
+    }
+
+    // append array size
+    if (stream)
+    {
+        if (!stream->WriteCompressedPositiveInt(mArraySize))
+        {
+            return false;
+        }
+    }
+
+    // append inner type
+    return mUnderlyingType->SerializeTypeName(stream, context);
+}
 
 } // namespace RTTI
 } // namespace NFE

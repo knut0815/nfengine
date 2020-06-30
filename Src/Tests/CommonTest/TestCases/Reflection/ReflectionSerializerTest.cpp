@@ -4,6 +4,8 @@
 #include "Engine/Common/Reflection/ReflectionUtils.hpp"
 #include "Engine/Common/Utils/Stream/BufferOutputStream.hpp"
 #include "Engine/Common/Utils/Stream/BufferInputStream.hpp"
+#include "Engine/Common/Utils/Stream/FileOutputStream.hpp"
+#include "Engine/Common/Utils/Stream/FileInputStream.hpp"
 #include "Engine/Common/Memory/Buffer.hpp"
 
 
@@ -84,6 +86,7 @@ TEST(ReflectionTest, Serialize_Simple_MultipleObject)
     }
 }
 
+/*
 TEST(ReflectionTest, Serialize_Complex_SingleRootObject)
 {
     Buffer buffer;
@@ -124,4 +127,45 @@ TEST(ReflectionTest, Serialize_Complex_SingleRootObject)
         EXPECT_EQ(456, readChildObj->i32);
         EXPECT_EQ(TestEnum::OptionC, readChildObj->e);
     }
+}
+*/
+
+/*
+TEST(ReflectionTest, Serialize_Complex_SingleRootObject_Write)
+{
+    const SharedPtr<SerializationTestClass> obj = MakeSharedPtr<SerializationTestClass>();
+    obj->i32 = 123;
+    obj->e = TestEnum::OptionB;
+
+    const SharedPtr<SerializationTestClass> childObj = MakeSharedPtr<SerializationTestClass>();
+    obj->sharedPtrA = childObj;
+    obj->sharedPtrB = childObj;
+    childObj->arrayOfObj[0].intValue = 123;
+    childObj->arrayOfObj[1].intValue = 456;
+
+    FileOutputStream stream("a.dat");
+    ASSERT_TRUE(Serialize(obj, stream));
+}
+*/
+
+TEST(ReflectionTest, Serialize_Complex_SingleRootObject_Read)
+{
+    FileInputStream stream("a.dat");
+    Common::DynArray<ObjectPtr> readObjects;
+
+    ASSERT_TRUE(Deserialize(readObjects, stream));
+    ASSERT_EQ(1u, readObjects.Size());
+
+    const SharedPtr<SerializationTestClass> readObj = Cast<SerializationTestClass>(readObjects[0]);
+
+    ASSERT_TRUE(readObj != nullptr);
+    EXPECT_EQ(123, readObj->i32);
+    EXPECT_EQ(TestEnum::OptionB, readObj->e);
+
+    ASSERT_TRUE(readObj->sharedPtrA != nullptr);
+    EXPECT_TRUE(readObj->sharedPtrA == readObj->sharedPtrB);
+    const SharedPtr<SerializationTestClass> readChildObj = Cast<SerializationTestClass>(readObj->sharedPtrA);
+    ASSERT_TRUE(readChildObj != nullptr);
+    EXPECT_EQ(123, readChildObj->arrayOfObj[0].intValue);
+    EXPECT_EQ(456, readChildObj->arrayOfObj[1].intValue);
 }

@@ -24,6 +24,9 @@ class NFCOMMON_API NativeArrayType : public ArrayType
 public:
     NativeArrayType(uint32 arraySize, const Type* underlyingType);
 
+    static const Common::String BuildTypeName(const Type* underlyingType, uint32 arraySize);
+    static const NativeArrayType* Create(const Type* underlyingType, uint32 arraySize);
+
     // get number of array elements
     NFE_FORCE_INLINE uint32 GetArraySize() const { return mArraySize; }
     virtual uint32 GetArraySize(const void* arrayObject) const override final;
@@ -35,6 +38,7 @@ public:
     virtual bool SerializeBinary(const void* object, Common::OutputStream* stream, SerializationContext& context) const override;
     virtual bool DeserializeBinary(void* outObject, Common::InputStream& stream, SerializationContext& context) const override;
     virtual bool Deserialize(void* outObject, const Common::IConfig& config, const Common::ConfigValue& value, SerializationContext& context) const override;
+    virtual bool SerializeTypeName(Common::OutputStream* stream, SerializationContext& context) const override;
 
     virtual bool Compare(const void* objectA, const void* objectB) const override;
     virtual bool Clone(void* destObject, const void* sourceObject) const override;
@@ -69,10 +73,11 @@ public:
     static void InitializeType(Type* type)
     {
         const Type* arrayElementType = ResolveType<T>();
-        const Common::String typeName = Common::String::Printf("%s[%u]", arrayElementType->GetName().Str(), N);
+        const Common::String typeName = NativeArrayType::BuildTypeName(arrayElementType, N);
 
         TypeInfo typeInfo;
         typeInfo.kind = TypeKind::NativeArray;
+        typeInfo.typeNameID = TypeNameID::NativeArray;
         typeInfo.size = sizeof(ObjectType);
         typeInfo.alignment = alignof(ObjectType);
         typeInfo.name = typeName.Str();
