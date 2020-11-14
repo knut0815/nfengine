@@ -125,7 +125,7 @@ public:
         // TODO: move scene registration to their source files
         // TODO: switching to arbitrary scene (e.g. omitting a single scene should be
         //       possible, when a feature is not implemented in renderer
-        mScenes.push_back(MakeUniquePtr<BasicScene>());
+        //mScenes.push_back(MakeUniquePtr<BasicScene>());
         // mScenes.push_back(MakeUniquePtr<MultisampleScene>()); // WIP
         mScenes.push_back(MakeUniquePtr<DepthStencilScene>());
         mScenes.push_back(MakeUniquePtr<RenderTargetsScene>());

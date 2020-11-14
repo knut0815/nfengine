@@ -569,7 +569,7 @@ bool CommandRecorder::WriteBuffer(const BufferPtr& buffer, size_t offset, size_t
 
     Internal_GetReferencedResources().buffers.Insert(buffer);
 
-    if (bufferPtr->GetMode() == ResourceAccessMode::GPUOnly || bufferPtr->GetMode() == ResourceAccessMode::Static)
+    if (bufferPtr->GetMode() == ResourceAccessMode::GPUOnly)
     {
         if (size > bufferPtr->GetSize())
         {
@@ -606,15 +606,12 @@ void CommandRecorder::CopyBuffer(const BufferPtr& src, const BufferPtr& dest, si
     Internal_GetReferencedResources().buffers.Insert(src);
     Internal_GetReferencedResources().buffers.Insert(dest);
 
-    if (srcBuffer->GetMode() != ResourceAccessMode::Upload &&
-        srcBuffer->GetMode() != ResourceAccessMode::Static &&
-        srcBuffer->GetMode() != ResourceAccessMode::GPUOnly)
+    if (srcBuffer->GetMode() != ResourceAccessMode::Upload && srcBuffer->GetMode() != ResourceAccessMode::GPUOnly)
     {
         NFE_FATAL("Invalid source buffer access mode");
     }
 
-    if (destBuffer->GetMode() != ResourceAccessMode::GPUOnly &&
-        destBuffer->GetMode() != ResourceAccessMode::Readback)
+    if (destBuffer->GetMode() != ResourceAccessMode::GPUOnly && destBuffer->GetMode() != ResourceAccessMode::Readback)
     {
         NFE_FATAL("Invalid destination buffer access mode");
     }
@@ -768,7 +765,7 @@ void CommandRecorder::CopyTexture(const TexturePtr& src, const TexturePtr& dest)
     Texture* destTex = dynamic_cast<Texture*>(dest.Get());
     NFE_ASSERT(destTex, "Invalid 'dest' pointer");
 
-    if (destTex->GetMode() == ResourceAccessMode::Static || destTex->GetMode() == ResourceAccessMode::Volatile)
+    if (destTex->GetMode() == ResourceAccessMode::Volatile)
     {
         NFE_LOG_ERROR("Can't copy to this texture");
         return;

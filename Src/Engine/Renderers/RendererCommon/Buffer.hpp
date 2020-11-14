@@ -24,14 +24,12 @@ struct BufferDesc
 {
     ResourceAccessMode mode;
     uint32 usage;
-    const void* initialData;
     size_t size;
     const char* debugName;   //< optional debug name
 
     BufferDesc()
-        : mode(ResourceAccessMode::Static)
+        : mode(ResourceAccessMode::GPUOnly)
         , usage(0u)
-        , initialData(nullptr)
         , size(0u)
         , debugName(nullptr)
     {}

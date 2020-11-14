@@ -10,6 +10,7 @@
 #include "../Common.hpp"
 
 #include "Engine/Common/Math/Matrix4.hpp"
+#include "Engine/Renderers/RendererCommon/Fence.hpp"
 
 #include <vector>
 #include <functional>
@@ -212,9 +213,17 @@ bool DepthStencilScene::CreateBasicResources(bool withDepth, bool withStencil)
     if (!mIndexBuffer)
         return false;
 
+    // upload buffer data
+    {
+        mCommandBuffer->Begin(CommandQueueType::Copy);
+        mCommandBuffer->WriteBuffer(mVertexBuffer, 0, sizeof(vbData), vbData);
+        mCommandBuffer->WriteBuffer(mIndexBuffer, 0, sizeof(ibData), ibData);
+        mCopyQueue->Execute(mCommandBuffer->Finish());
+        mCopyQueue->Signal()->Wait();
+    }
+
     bufferDesc.mode = ResourceAccessMode::Volatile;
     bufferDesc.size = sizeof(VertexCBuffer);
-    bufferDesc.initialData = nullptr;
     mConstantBuffer = mRendererDevice->CreateBuffer(bufferDesc);
     if (!mConstantBuffer)
         return false;

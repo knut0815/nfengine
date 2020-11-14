@@ -17,32 +17,30 @@ namespace Renderer {
 
 class Buffer : public IBuffer, public Resource
 {
-    uint32 mSize;
-
-    // Upload data (used for Static buffers only)
-    bool UploadData(const BufferDesc& desc);
-
 public:
     Buffer();
     ~Buffer();
 
     bool Init(const BufferDesc& desc);
 
-    NFE_INLINE ID3D12Resource* GetResource() const
+    NFE_FORCE_INLINE ID3D12Resource* GetResource() const
     {
         return mResource.Get();
     }
 
-    NFE_INLINE uint32 GetSize() const
+    NFE_FORCE_INLINE uint32 GetSize() const
     {
         return mSize;
     }
 
     // get allocated memory size
-    NFE_INLINE uint32 GetRealSize() const
+    NFE_FORCE_INLINE uint32 GetRealSize() const
     {
         return (mSize + 255) & ~255;
     }
+
+private:
+    uint32 mSize;
 };
 
 } // namespace Renderer

@@ -26,7 +26,6 @@ bool DynamicTextureScene::CreateSubSceneSimple()
     TextureDesc textureDesc;
     textureDesc.binding = 0;
     textureDesc.format = mBackbufferFormat; // match with backbuffer format, because we copy the data directly
-    textureDesc.mode = ResourceAccessMode::GPUOnly;
     textureDesc.width = WINDOW_WIDTH;
     textureDesc.height = WINDOW_HEIGHT;
     textureDesc.binding = NFE_RENDERER_TEXTURE_BIND_RENDERTARGET;

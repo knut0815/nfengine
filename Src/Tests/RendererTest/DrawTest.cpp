@@ -25,7 +25,6 @@ void DrawTest::BeginTestFrame(uint32 width, uint32 height, uint32 numTargets, co
 
         TextureDesc texDesc;
         texDesc.binding = NFE_RENDERER_TEXTURE_BIND_RENDERTARGET;
-        texDesc.mode = ResourceAccessMode::GPUOnly;
         texDesc.format = formats[i];
         texDesc.width = width;
         texDesc.height = height;
